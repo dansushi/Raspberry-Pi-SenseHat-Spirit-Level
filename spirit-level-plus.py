@@ -68,7 +68,7 @@ show_display = True
 display_paused = False      # Sets display as being unpaused be default
 centered = False
 speed_in_ms = 0             # Higher is slower, delay in milliseconds, 20 is default
-difficulty = 42             # 7 is lowest, for full 90 degrees; 42 is default
+difficulty = 56             # 7 is lowest, for full 90 degrees; 56 is default
 dot_type = "dot_bubble"      # Use either dot_bubble or dot_ball
 color_type = "by_yaw"
 
@@ -113,14 +113,14 @@ def check_joystick_keystrokes():
             #JOYSTICK LEFT/RIGHT SENSITIVITY
             if event.key == pygame.K_LEFT:  # Makes less difficult/sensitive
                 if difficulty > 7:          # Limits sensitivity to 7 units min (lower is less sensitive)
-                    difficulty -= 7         # Decreases sensitivity by 7 units
+                    difficulty /= 2         # Halves sensitivity
                 else:
                     difficulty = 7
             if event.key == pygame.K_RIGHT: # Makes more difficult/sensitive
-                if difficulty < 10000:      # Limits sensitivity to 10000 units max (higher is more sensitive)
-                    difficulty += 7         # Increases sensitivity by 7 units
+                if difficulty < 7168:      # Limits sensitivity to 10000 units max (higher is more sensitive)
+                    difficulty *= 2         # Doubles sensitivity
                 else:
-                    difficulty = 7
+                    difficulty = 7168
             #JOYSTICK UP/DOWN SPEED
             if event.key == pygame.K_UP:    # Adds more of a delay (i.e. slower refresh rate)
                 if speed_in_ms < 1000:      # Limits delay to 1000ms (one second) maximum
@@ -133,20 +133,20 @@ def check_joystick_keystrokes():
                 else:
                     speed_in_ms = 0
             #COLOR MODE
-            if event.key == pygame.K_r or event.key == pygame.K_c: # Toggles color type with 'y' or 'c' key
+            if event.key == pygame.K_r:     # Toggles color type with 'r' key
                 global color_type
-                if color_type == "by_yaw":  # Is it in by_yaw mode?
-                    color_type = "random"   # Then change to random mode
-                elif color_type == "random":                       # Is it in random mode?
-                    color_type = "by_yaw"  # Then change to by_yaw mode
+                if color_type == "by_yaw":      # Is it in by_yaw mode?
+                    color_type = "random"       # Then change to random mode
+                elif color_type == "random":    # Is it in random mode?
+                    color_type = "by_yaw"       # Then change to by_yaw mode
             #SHOW PYGAME DISPLAY??
-            if event.key == pygame.K_d:     # Toggles pygame display on and off with the 'd' key
+            if event.key == pygame.K_p:     # Toggles pygame display on and off with the 'p' key
                 global show_display
-                if show_display == True:    # Is display on?
-                    show_display = False   # Then turn it off
-                    display_paused = False # Sets display_paused to False so that it runs the elif statement below displaying pause for the first time, and then not repetitively.
-                else:                       # Is display off?
-                    show_display = True    # Then turn it on
+                if show_display == True:        # Is display on?
+                    show_display = False        # Then turn it off
+                    display_paused = False      # Sets display_paused to False so that it runs the elif statement below displaying pause for the first time, and then not repetitively.
+                else:                           # Is display off?
+                    show_display = True         # Then turn it on
 
 #####-----------------------BEGIN COLOR SECTION-----------------------#####
 
@@ -327,14 +327,16 @@ def display_frame(screen):
     sub_title =         font_sm.render('(Created by Dan Schneider - 2015)', True, BLACK)
     ### LEFT SIDE OF SCREEN ###
     instruct_title =    font_big.render('Instructions:', True, BLACK)
-    instruct_1 =   font_sm.render('Use either the Raspberry Pi Joystick or Keyboard Arrow Keys.', True, BLACK)
-    instruct_2 =   font_sm.render('Use UP/DOWN to adjust the Delay in milliseconds between screen refreshes', True, BLACK)
-    instruct_3 =   font_sm.render('Use LEFT/RIGHT to adjust the Sensitivity ', True, BLACK)
-    instruct_4 =   font_xsm.render('7 refers to 180 degrees from side to side fitting the 8x8 LED screen exactly', True, BLACK)
-    instruct_5 =   font_xsm.render('Any higher than 7 will be more sensitive, and the dot will get stuck on the sides more easily', True, BLACK)
-    instruct_6 =   font_sm.render('Use CENTER (or ENTER key) to toggle between Bubble and Ball dot-type', True, BLACK)
-    instruct_7 =   font_sm.render('Tap \'d\' key to pause display', True, BLACK)
-    instruct_8 =   font_sm.render('Tap \'r\' key for random colors', True, BLACK)
+    instruct_1 =   font_sm.render('Use either the Raspberry Pi\'s joystick or keyboard\'s arrow keys.', True, BLACK)
+    instruct_2 =   font_sm.render('Use UP/DOWN to add a Delay in milliseconds between screen refreshes.', True, BLACK)
+    instruct_3 =   font_sm.render('Use LEFT/RIGHT to adjust the Sensitivity.', True, BLACK)
+    instruct_4 =   font_xsm.render('Minimum sensitivity is "1", and each RIGHT keypress will double the sensitivity.', True, BLACK) # i.e., the dot will get stuck on the sides more easily
+    instruct_5 =   font_xsm.render('When set to "1", tilting +/-90 degrees from center (for both pitch or roll) will fit the 8x8 LED screen exactly.', True, BLACK)
+    instruct_6 =   font_sm.render('Use CENTER-CLICK (or ENTER key) to toggle the Dot-type.', True, BLACK)
+    instruct_7 =   font_sm.render('Tap \'P\' key to pause display.', True, BLACK)
+    instruct_8 =   font_sm.render('Tap \'R\' key for random colors.', True, BLACK)
+    instruct_9 =   font_sm.render('The LED hue is determined by the yaw in degrees.', True, BLACK)
+    instruct_10 =   font_xsm.render('0\N{DEGREE SIGN}/360\N{DEGREE SIGN} is Cyan, 180\N{DEGREE SIGN} is Red, 300\N{DEGREE SIGN} is Green, and 60\N{DEGREE SIGN} is Blue.', True, BLACK)
     ### RIGHT SIDE OF SCREEN ###
     readings_title =    font_big.render('Readings:', True, BLACK)
     readings_t_rad =    font_sm.render('Radians:', True, BLACK)
@@ -353,11 +355,11 @@ def display_frame(screen):
     readings_3c =   font_med.render(deg_3c[0:2+deg_3c.find('.')] + "\N{DEGREE SIGN}", True, BLACK)
     mode_title =    font_big.render('Mode:', True, BLACK)
     mode_1 =    font_med.render("Delay: " + str(speed_in_ms) + "ms", True, BLACK)
-    mode_2 =    font_sm.render('', True, BLACK)
-    mode_3 =    font_med.render("Sensitivity: " + str(difficulty), True, BLACK)
-    mode_4 =    font_sm.render('', True, BLACK)
-    mode_5 =    font_med.render("Dot-type: " + str(dot_type), True, BLACK)
-    mode_6 =    font_sm.render('', True, BLACK)
+    mode_2 =    font_xsm.render('Min: 0        Max: 1000', True, BLACK)
+    mode_3 =    font_med.render("Sensitivity: " + str(int(difficulty / 7)), True, BLACK) # The "/ 7" Converts to understandable units
+    mode_4 =    font_xsm.render('Min: 1        Max: 1024', True, BLACK)
+    mode_5 =    font_med.render("Dot-type: B" + dot_type[5:10], True, BLACK)
+    mode_6 =    font_xsm.render('Toggles between Bubble and Ball', True, BLACK)
         
     #Make Locations on the screen:
     title_center_x = (SCREEN_WIDTH // 2) - (title.get_width() // 2)
@@ -376,6 +378,8 @@ def display_frame(screen):
     screen.blit( instruct_6, [rel_step * 6, rel_step * 86] )
     screen.blit( instruct_7, [rel_step * 6, rel_step * 96] )
     screen.blit( instruct_8, [rel_step * 6, rel_step * 106] )
+    screen.blit( instruct_9, [rel_step * 6, rel_step * 116] )
+    screen.blit( instruct_10, [rel_step * 6, rel_step * 126] )
     
     screen.blit( readings_title, [readings_title_center_x, rel_step * 25] )
     screen.blit( readings_t_rad, [rel_step * 278, rel_step * 45] )
@@ -408,7 +412,7 @@ def display_pause(screen):
     screen.fill(WHITE)
     font_xxbig = pygame.font.SysFont('sans', 80)
     #Make Text:
-    pause_title =             font_xxbig.render('DISPLAY PAUSED', True, BLACK)
+    pause_title = font_xxbig.render('DISPLAY PAUSED', True, BLACK)
     #Make Locations on the screen:
     pause_center_x = (SCREEN_WIDTH // 2) - (pause_title.get_width() // 2)
     pause_center_y = (SCREEN_HEIGHT // 2) - (pause_title.get_height() // 2)
