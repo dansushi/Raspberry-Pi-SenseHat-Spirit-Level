@@ -1,5 +1,5 @@
 # Raspberry Pi SenseHat Scripts
-As of now, all I have here is my personally created Spirit Level script, spirit-level.py
+As of now, all I have here is my Spirit Level script, spirit-level.py
 
 It contains such features as:
 
