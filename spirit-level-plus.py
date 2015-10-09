@@ -24,7 +24,8 @@ DISCLAIMER:
 I am not by any reach of the imagination a professional programmer.
 My code is very messy and there are very likely much better ways to do this.
 If you have any recommendations about how to clean up my code, or just any
-questions in general, feel free to reach out to me via my github account.
+questions in general, feel free to reach out to me via my github account:
+https://github.com/dansushi/
 
 Authored by Dan Schneider (2015), along with some
 helpful coding techniques borrowed from
@@ -140,7 +141,7 @@ def check_joystick_keystrokes():
                 elif color_type == "random":    # Is it in random mode?
                     color_type = "by_yaw"       # Then change to by_yaw mode
             #SHOW PYGAME DISPLAY??
-            if event.key == pygame.K_p:     # Toggles pygame display on and off with the 'p' key
+            if event.key == pygame.K_p or event.key == pygame.K_d:     # Toggles pygame display on and off with the 'p' or 'd' key
                 global show_display
                 if show_display == True:        # Is display on?
                     show_display = False        # Then turn it off
@@ -162,7 +163,7 @@ def calc_color_randomly():
     return color_0
     
 def calc_color_by_yaw(yaw_raw):
-    yaw_range_0_to_1 = ( 1 / math.pi * .5 * yaw_raw + 1/2)
+    yaw_range_0_to_1 = yaw_raw / (2 * math.pi) - math.floor(yaw_raw / math.pi) # Converts range of -3.14 to +3.14 to 0 to 1, with hue of 0 and 1 being RED
     color_0_unrounded = colorsys.hsv_to_rgb(yaw_range_0_to_1,1,255)
     #With colorsys.hsv_to_rgb: hue from 0->1, saturation from 0->1, value from 0->255
     r_yaw = round(color_0_unrounded[0]) # Rounds R value within color_0
@@ -324,7 +325,8 @@ def display_frame(screen):
     #Make Text:
     ### TOP-CENTER ###
     title =             font_xbig.render('Raspberry Pi Spirit Level', True, BLACK)
-    sub_title =         font_sm.render('(Created by Dan Schneider - 2015)', True, BLACK)
+    sub_title =         font_sm.render('(Created by Dan Schneider - October 2015)', True, BLACK)
+        
     ### LEFT SIDE OF SCREEN ###
     instruct_title =    font_big.render('Instructions:', True, BLACK)
     instruct_1 =   font_sm.render('Use either the Raspberry Pi\'s joystick or keyboard\'s arrow keys.', True, BLACK)
@@ -333,10 +335,11 @@ def display_frame(screen):
     instruct_4 =   font_xsm.render('Minimum sensitivity is "1", and each RIGHT keypress will double the sensitivity.', True, BLACK) # i.e., the dot will get stuck on the sides more easily
     instruct_5 =   font_xsm.render('When set to "1", tilting +/-90 degrees from center (for both pitch or roll) will fit the 8x8 LED screen exactly.', True, BLACK)
     instruct_6 =   font_sm.render('Use CENTER-CLICK (or ENTER key) to toggle the Dot-type.', True, BLACK)
-    instruct_7 =   font_sm.render('Tap \'P\' key to pause display.', True, BLACK)
-    instruct_8 =   font_sm.render('Tap \'R\' key for random colors.', True, BLACK)
+    instruct_7 =   font_sm.render('Tap \'P\' key to pause display. This will greatly speed up the LED screen refresh rate.', True, BLACK)
+    instruct_8 =   font_sm.render('Tap \'R\' key to toggle random colors.', True, BLACK)
     instruct_9 =   font_sm.render('The LED hue is determined by the yaw in degrees.', True, BLACK)
-    instruct_10 =   font_xsm.render('0\N{DEGREE SIGN}/360\N{DEGREE SIGN} is Cyan, 180\N{DEGREE SIGN} is Red, 300\N{DEGREE SIGN} is Green, and 60\N{DEGREE SIGN} is Blue.', True, BLACK)
+    instruct_10 =   font_xsm.render('0\N{DEGREE SIGN}/360\N{DEGREE SIGN} is Red, 60\N{DEGREE SIGN} is Yellow, 120\N{DEGREE SIGN} is Green, 180\N{DEGREE SIGN} is Cyan, and 240\N{DEGREE SIGN} is Blue.', True, BLACK)
+    footer =         font_sm.render('https://github.com/dansushi/SenseHat', True, BLACK)
     ### RIGHT SIDE OF SCREEN ###
     readings_title =    font_big.render('Readings:', True, BLACK)
     readings_t_rad =    font_sm.render('Radians:', True, BLACK)
@@ -356,55 +359,58 @@ def display_frame(screen):
     mode_title =    font_big.render('Mode:', True, BLACK)
     mode_1 =    font_med.render("Delay: " + str(speed_in_ms) + "ms", True, BLACK)
     mode_2 =    font_xsm.render('Min: 0        Max: 1000', True, BLACK)
-    mode_3 =    font_med.render("Sensitivity: " + str(int(difficulty / 7)), True, BLACK) # The "/ 7" Converts to understandable units
+    mode_3 =    font_med.render("Sensitivity: " + str(int(difficulty / 7)), True, BLACK) # The "/ 7" Converts to user-friendly units
     mode_4 =    font_xsm.render('Min: 1        Max: 1024', True, BLACK)
     mode_5 =    font_med.render("Dot-type: B" + dot_type[5:10], True, BLACK)
     mode_6 =    font_xsm.render('Toggles between Bubble and Ball', True, BLACK)
         
     #Make Locations on the screen:
     title_center_x = (SCREEN_WIDTH // 2) - (title.get_width() // 2)
-    instruct_title_center_x = (SCREEN_WIDTH // 4) - (instruct_title.get_width() // 2)
-    readings_title_center_x = (SCREEN_WIDTH // (1.23) ) - (readings_title.get_width() // 2)
-    mode_title_center_x = (SCREEN_WIDTH // (1.23)  ) - (mode_title.get_width() // 2)
+    sub_title_center_x = (SCREEN_WIDTH // 2) - (sub_title.get_width() // 2)
+    instruct_title_center_x = (SCREEN_WIDTH // 3.2) - (instruct_title.get_width() // 2)
+    readings_title_center_x = (SCREEN_WIDTH // (1.21) ) - (readings_title.get_width() // 2)
+    mode_title_center_x = (SCREEN_WIDTH // (1.21)  ) - (mode_title.get_width() // 2)
     
     #Print Text:
-    screen.blit( title, [title_center_x, rel_step * 4] )
-    screen.blit( instruct_title, [instruct_title_center_x, rel_step * 25] )
-    screen.blit( instruct_1, [rel_step * 6, rel_step * 40] )
-    screen.blit( instruct_2, [rel_step * 6, rel_step * 50] )
-    screen.blit( instruct_3, [rel_step * 6, rel_step * 60] )
-    screen.blit( instruct_4, [rel_step * 6, rel_step * 70] )
-    screen.blit( instruct_5, [rel_step * 6, rel_step * 78] )
-    screen.blit( instruct_6, [rel_step * 6, rel_step * 86] )
-    screen.blit( instruct_7, [rel_step * 6, rel_step * 96] )
-    screen.blit( instruct_8, [rel_step * 6, rel_step * 106] )
-    screen.blit( instruct_9, [rel_step * 6, rel_step * 116] )
-    screen.blit( instruct_10, [rel_step * 6, rel_step * 126] )
+    screen.blit( title, [title_center_x, rel_step * 10] )
+    screen.blit( sub_title, [sub_title_center_x, rel_step * 27] )
     
-    screen.blit( readings_title, [readings_title_center_x, rel_step * 25] )
-    screen.blit( readings_t_rad, [rel_step * 278, rel_step * 45] )
-    screen.blit( readings_t_deg, [rel_step * 307, rel_step * 45] )
-    screen.blit( readings_1a, [rel_step * 250, rel_step * 55] )
-    screen.blit( readings_1b, [SCREEN_WIDTH // (1.18) - readings_1b.get_width(), rel_step * 55] )
-    screen.blit( readings_1c, [SCREEN_WIDTH // (1.07) - readings_1c.get_width(), rel_step * 55] )
-    screen.blit( readings_2a, [rel_step * 250, rel_step * 70] )
-    screen.blit( readings_2b, [SCREEN_WIDTH // (1.18) - readings_2b.get_width(), rel_step * 70] )
-    screen.blit( readings_2c, [SCREEN_WIDTH // (1.07) - readings_2c.get_width(), rel_step * 70] )
-    readings_3_bg = pygame.draw.rect(screen, color_0, [rel_step * 249, rel_step * 84.4, rel_step * 84, rel_step * 10.5])
-    screen.blit( readings_3a, [rel_step * 250, rel_step * 85] )
-    screen.blit( readings_3b, [SCREEN_WIDTH // (1.18) - readings_3b.get_width(), rel_step * 85] )
-    screen.blit( readings_3c, [SCREEN_WIDTH // (1.07) - readings_3c.get_width(), rel_step * 85] )
+    screen.blit( instruct_title, [instruct_title_center_x, rel_step * 40] )
+    screen.blit( instruct_1, [rel_step * 12, rel_step * 55] )
+    screen.blit( instruct_2, [rel_step * 12, rel_step * 67] )
+    screen.blit( instruct_3, [rel_step * 12, rel_step * 79] )
+    screen.blit( instruct_4, [rel_step * 18, rel_step * 88] )
+    screen.blit( instruct_5, [rel_step * 18, rel_step * 95] )
+    screen.blit( instruct_6, [rel_step * 12, rel_step * 105] )
+    screen.blit( instruct_7, [rel_step * 12, rel_step * 117] )
+    screen.blit( instruct_8, [rel_step * 12, rel_step * 129] )
+    screen.blit( instruct_9, [rel_step * 12, rel_step * 141] )
+    screen.blit( instruct_10, [rel_step * 18, rel_step * 150] )
+        
+    screen.blit( readings_title, [readings_title_center_x, rel_step * 40] )
+    screen.blit( readings_t_rad, [rel_step * 283, rel_step * 55] )
+    screen.blit( readings_t_deg, [rel_step * 314, rel_step * 55] )
+    screen.blit( readings_1a, [rel_step * 255, rel_step * 65] )
+    screen.blit( readings_1b, [SCREEN_WIDTH // (1.16) - readings_1b.get_width(), rel_step * 65] )
+    screen.blit( readings_1c, [SCREEN_WIDTH // (1.05) - readings_1c.get_width(), rel_step * 65] )
+    screen.blit( readings_2a, [rel_step * 255, rel_step * 80] )
+    screen.blit( readings_2b, [SCREEN_WIDTH // (1.16) - readings_2b.get_width(), rel_step * 80] )
+    screen.blit( readings_2c, [SCREEN_WIDTH // (1.05) - readings_2c.get_width(), rel_step * 80] )
+    readings_3_bg = pygame.draw.rect(screen, color_0, [rel_step * 254, rel_step * 94.4, rel_step * 86, rel_step * 10.5])
+    screen.blit( readings_3a, [rel_step * 255, rel_step * 95] )
+    screen.blit( readings_3b, [SCREEN_WIDTH // (1.16) - readings_3b.get_width(), rel_step * 95] )
+    screen.blit( readings_3c, [SCREEN_WIDTH // (1.05) - readings_3c.get_width(), rel_step * 95] )
 
     
-    screen.blit( mode_title, [mode_title_center_x, rel_step * 100] )
-    screen.blit( mode_1, [rel_step * 250, rel_step * 120] )
-    screen.blit( mode_2, [rel_step * 250, rel_step * 130] )
-    screen.blit( mode_3, [rel_step * 250, rel_step * 140] )
-    screen.blit( mode_4, [rel_step * 250, rel_step * 150] )
-    screen.blit( mode_5, [rel_step * 250, rel_step * 160] )
-    screen.blit( mode_6, [rel_step * 250, rel_step * 170] )
+    screen.blit( mode_title, [mode_title_center_x, rel_step * 115] )
+    screen.blit( mode_1, [rel_step * 255, rel_step * 130] )
+    screen.blit( mode_2, [rel_step * 255, rel_step * 140] )
+    screen.blit( mode_3, [rel_step * 255, rel_step * 150] )
+    screen.blit( mode_4, [rel_step * 255, rel_step * 160] )
+    screen.blit( mode_5, [rel_step * 255, rel_step * 170] )
+    screen.blit( mode_6, [rel_step * 255, rel_step * 180] )
     
-    
+    screen.blit( footer, [rel_step * 12, rel_step * 179] )
     
     pygame.display.flip()
     
