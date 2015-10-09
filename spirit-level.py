@@ -24,7 +24,7 @@ DISCLAIMER:
 I am not by any reach of the imagination a professional programmer.
 My code is very messy and there are very likely much better ways to do this.
 If you have any recommendations about how to clean up my code, or just any
-questions in general, feel free to reach out to me via my github account:
+questions in general, feel free to reach out to me via my github account at
 https://github.com/dansushi/
 
 Authored by Dan Schneider (2015), along with some
