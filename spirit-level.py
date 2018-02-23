@@ -68,7 +68,7 @@ global speed_in_ms,difficulty,dot_type,color_type,show_display,display_paused,x_
 show_display = True
 display_paused = False      # Sets display as being unpaused be default
 centered = False
-speed_in_ms = 0             # Higher is slower, delay in milliseconds, 20 is default
+speed_in_ms = 0             # Higher is slower, delay in milliseconds, 0 is default
 difficulty = 56             # 7 is lowest, for full 90 degrees; 56 is default
 dot_type = "dot_bubble"      # Use either dot_bubble or dot_ball
 color_type = "by_yaw"
@@ -155,7 +155,7 @@ def calc_color_randomly():
     r = randint(0, 255)
     g = randint(0, 255)
     b = randint(0, 255)
-    if r > 50 and g > 50 and b > 50: # This makes sure the color doesn't show up as black (If all R,G and B are below 50, the SenseHat won't display it.
+    if r < 50 and g < 50 and b < 50: # This makes sure the color doesn't show up as black (If all R,G and B are below 50, the SenseHat won't display it.
         r = randint(50, 255)
         g = randint(50, 255)
         b = randint(50, 255)        
