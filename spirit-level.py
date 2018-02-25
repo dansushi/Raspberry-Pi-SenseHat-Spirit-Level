@@ -221,7 +221,7 @@ def run_logic():
 # PITCH
     x_rad = float("{pitch}".format(**orientation_rad)) # float() makes sure the pitch is a number and not a string
     x_led = ( difficulty / math.pi * dot_direction("dot_x") * x_rad + 3.5 )
-    x_int = round(x_led,0)
+    x_int = int(round(x_led,0))
     x_round = round(x_led,2)
     #Makes sure the the sense hat is happy with x values between 0 and 7:
     if x_int > 7:
@@ -231,7 +231,7 @@ def run_logic():
 # ROLL
     y_rad = float("{roll}".format(**orientation_rad)) # float() makes sure the roll is a number and not a string
     y_led = ( difficulty / math.pi * dot_direction("dot_y") * y_rad + 3.5 )
-    y_int = round(y_led,0)
+    y_int = int(round(y_led,0))
     y_round = round(y_led,2)
     #Makes sure the the sense hat is happy with y values between 0 and 7:
     if y_int > 7:
