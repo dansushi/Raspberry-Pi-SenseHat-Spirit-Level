@@ -1,7 +1,6 @@
-# Raspberry Pi SenseHat Scripts
-As of now, all I have here is my Spirit Level script, spirit-level.py
+# Raspberry Pi SenseHat Spirit Level
 
-It contains such features as:
+This python script the following features:
 
  - Detecting Pitch, Roll, and Yaw
  -  Using the pygame library, it displays orientation information in radians and degrees 
